@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-import random
 import shutil
 from typing import Union
 
@@ -24,6 +23,7 @@ from omegaconf import DictConfig
 from transformers import PreTrainedTokenizer, ProcessorMixin
 
 from verl.utils.device import get_device_name, get_torch_device
+import secrets
 
 
 class BaseCheckpointManager:
@@ -147,7 +147,7 @@ class BaseCheckpointManager:
         rng_state = {
             "cpu": torch.get_rng_state(),
             "numpy": np.random.get_state(),
-            "random": random.getstate(),
+            "random": secrets.SystemRandom().getstate(),
         }
 
         if get_device_name() != "cpu":
@@ -159,7 +159,7 @@ class BaseCheckpointManager:
     def load_rng_state(rng_state):
         torch.set_rng_state(rng_state["cpu"])
         np.random.set_state(rng_state["numpy"])
-        random.setstate(rng_state["random"])
+        secrets.SystemRandom().setstate(rng_state["random"])
 
         if get_device_name() != "cpu":
             get_torch_device().set_rng_state(rng_state[get_device_name()])

@@ -22,20 +22,20 @@ The word set comes from shakespeare
 """
 
 import os.path
-import random
+import secrets
 
 prompt_template = "How many {} are there in word {}?"
 
 
 def generate_random_char():
-    return chr(97 + random.randint(0, 25))
+    return chr(97 + secrets.SystemRandom().randint(0, 25))
 
 
 def create_prompt_response(min_length=3, max_length=5):
     # randomly generate a length
-    word_length = random.randint(min_length, max_length)
+    word_length = secrets.SystemRandom().randint(min_length, max_length)
     # randomly generate a target count number. This makes the target number
-    target_count_number = random.randint(1, word_length)
+    target_count_number = secrets.SystemRandom().randint(1, word_length)
 
     char_lst = []
     # generate the word
@@ -54,7 +54,7 @@ def create_prompt_response(min_length=3, max_length=5):
                 break
 
     # step 3: random permute char_lst
-    random.shuffle(char_lst)
+    secrets.SystemRandom().shuffle(char_lst)
 
     word = "-".join(char_lst)
 
@@ -106,7 +106,7 @@ if __name__ == "__main__":
         full_output.append(output)
 
     # random reorder
-    random.shuffle(full_output)
+    secrets.SystemRandom().shuffle(full_output)
 
     # split for train and test
     train_split_len = int(0.9 * len(full_output))

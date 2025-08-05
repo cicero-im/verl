@@ -22,6 +22,7 @@ from functools import partial
 from datasets import concatenate_datasets, load_dataset
 
 from verl.utils.hdfs_io import copy, makedirs
+import secrets
 
 
 def example_map_fn(example, idx, process_fn, data_source, ability, split):
@@ -51,7 +52,6 @@ def build_aime2024_dataset():
 
 
 def build_gpqa_dimond_dataset():
-    import random
 
     GPQA_QUERY_TEMPLATE = (
         "Answer the following multiple choice question. The last line of your response should be of the following "
@@ -61,8 +61,8 @@ def build_gpqa_dimond_dataset():
 
     def process_gpqa_diamond(example):
         choices = [example["Incorrect Answer 1"], example["Incorrect Answer 2"], example["Incorrect Answer 3"]]
-        random.shuffle(choices)
-        gold_index = random.randint(0, 3)
+        secrets.SystemRandom().shuffle(choices)
+        gold_index = secrets.SystemRandom().randint(0, 3)
         choices.insert(gold_index, example["Correct Answer"])
         query_prompt = GPQA_QUERY_TEMPLATE.format(
             A=choices[0], B=choices[1], C=choices[2], D=choices[3], Question=example["Question"]

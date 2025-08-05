@@ -15,7 +15,6 @@
 import json
 import logging
 import os
-import random
 from collections.abc import Callable
 from dataclasses import asdict
 
@@ -39,6 +38,7 @@ from verl.utils.megatron_utils import (
 )
 
 from .checkpoint_manager import BaseCheckpointManager
+import secrets
 
 # Setup logging
 logger = logging.getLogger(__file__)
@@ -151,7 +151,7 @@ class MegatronCheckpointManager(BaseCheckpointManager):
     def get_rng_state(self, use_dist_ckpt: bool = True, data_parallel_random_init: bool = False):
         """collect rng state across data parallel ranks"""
         rng_state = {
-            "random_rng_state": random.getstate(),
+            "random_rng_state": secrets.SystemRandom().getstate(),
             "np_rng_state": np.random.get_state(),
             "torch_rng_state": torch.get_rng_state(),
             "rng_tracker_states": tensor_parallel.get_cuda_rng_tracker().get_states(),
@@ -269,7 +269,7 @@ class MegatronCheckpointManager(BaseCheckpointManager):
             rng_states = rng_states[mpu.get_data_parallel_rank()]
         else:
             rng_states = rng_states[0]
-        random.setstate(rng_states["random_rng_state"])
+        secrets.SystemRandom().setstate(rng_states["random_rng_state"])
         np.random.set_state(rng_states["np_rng_state"])
         torch.set_rng_state(rng_states["torch_rng_state"])
 

@@ -15,7 +15,6 @@ import asyncio
 import heapq
 import logging
 import os
-import random
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Type
 
@@ -33,6 +32,7 @@ from verl.single_controller.ray.base import RayWorkerGroup
 from verl.utils import hf_tokenizer
 from verl.utils.fs import copy_to_local
 from verl.workers.rollout.async_server import async_server_class
+import secrets
 
 logger = logging.getLogger(__file__)
 logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
@@ -55,7 +55,7 @@ class AsyncLLMServerManager:
         """
         self.config = config
         self.server_handles = server_handles
-        random.shuffle(self.server_handles)
+        secrets.SystemRandom().shuffle(self.server_handles)
 
         # Least requests load balancing
         self.weighted_serveres = [[0, (hash(server), server)] for server in server_handles]
